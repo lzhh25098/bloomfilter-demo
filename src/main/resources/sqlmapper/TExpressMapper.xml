@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enjoylearning.bloomfilter.mapper.TExpressMapper" >
+
+
+  <resultMap id="detail" type="com.enjoylearning.bloomfilter.entity.TExpressDetail" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="expressid" property="expressid" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMap" type="com.enjoylearning.bloomfilter.entity.TExpress" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="sender" property="sender" jdbcType="VARCHAR" />
+    <result column="adress" property="adress" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+  
+    <collection property="details" ofType="com.enjoylearning.bloomfilter.entity.TExpressDetail" column="id">  
+         <id column="sid" property="id"  jdbcType="VARCHAR"/>  
+         <result column="expressid" property="expressid" jdbcType="VARCHAR" />
+         <result column="content" property="content" jdbcType="VARCHAR" />
+    </collection>  
+  </resultMap>
+  
+  <select id="getDetails" parameterType="java.lang.String" resultType="com.enjoylearning.bloomfilter.entity.TExpressDetail">  
+        select id,expressid,content
+		from t_express_detail b
+		where b.expressid=#{id}
+  </select>  
+  
+  
+  
+  <sql id="Base_Column_List" >
+    id, sender, adress, createtime
+  </sql>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    a.id, a.sender, a.adress, a.createtime,b.id as sid,b.expressid,b.content
+    from t_express a,t_express_detail b
+	where a.id = b.expressid and
+          a.id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_express
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.enjoylearning.bloomfilter.entity.TExpress" >
+    insert into t_express (id, sender, adress, 
+      createtime)
+    values (#{id,jdbcType=VARCHAR}, #{sender,jdbcType=VARCHAR}, #{adress,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.enjoylearning.bloomfilter.entity.TExpress" >
+    insert into t_express
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sender != null" >
+        sender,
+      </if>
+      <if test="adress != null" >
+        adress,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="sender != null" >
+        #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="adress != null" >
+        #{adress,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.enjoylearning.bloomfilter.entity.TExpress" >
+    update t_express
+    <set >
+      <if test="sender != null" >
+        sender = #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="adress != null" >
+        adress = #{adress,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.enjoylearning.bloomfilter.entity.TExpress" >
+    update t_express
+    set sender = #{sender,jdbcType=VARCHAR},
+      adress = #{adress,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  	<select id="getDistinctCode" resultType="string">
+		select distinct id
+		from t_express
+	</select>
+  
+  
+</mapper>
